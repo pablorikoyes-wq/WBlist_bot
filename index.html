@@ -1,4 +1,4 @@
-<html lang="uz" style="--tg-theme-accent-text-color: #6ab2f2; --tg-color-scheme: dark; --tg-theme-bg-color: #17212b; --tg-theme-bottom-bar-bg-color: #17212b; --tg-theme-button-color: #5288c1; --tg-theme-button-text-color: #ffffff; --tg-theme-destructive-text-color: #ec3942; --tg-theme-header-bg-color: #17212b; --tg-theme-hint-color: #708499; --tg-theme-link-color: #6ab3f3; --tg-theme-secondary-bg-color: #232e3c; --tg-theme-section-bg-color: #17212b; --tg-theme-section-header-text-color: #6ab3f3; --tg-theme-section-separator-color: #111921; --tg-theme-subtitle-text-color: #708499; --tg-theme-text-color: #f5f5f5; --tg-viewport-height: 502px; --tg-viewport-stable-height: 502px; --tg-safe-area-inset-top: 0px; --tg-safe-area-inset-bottom: 0px; --tg-safe-area-inset-left: 0px; --tg-safe-area-inset-right: 0px; --tg-content-safe-area-inset-top: 0px; --tg-content-safe-area-inset-bottom: 0px; --tg-content-safe-area-inset-left: 0px; --tg-content-safe-area-inset-right: 0px;"><head><script>window.BOT_ID = 163;window.SPONSOR_CHANNELS = [];window.VERIFY_CHANNELS = [];window.BUTTON_COLOR = 'default';window.BUTTON_COLOR_HEX = '#2481cc';window.IS_PREVIEW = false;window.TP_MODE = true;</script>
+<html lang="uz" style="--tg-theme-accent-text-color: #6ab2f2; --tg-color-scheme: dark; --tg-theme-bg-color: #17212b; --tg-theme-bottom-bar-bg-color: #17212b; --tg-theme-button-color: #5288c1; --tg-theme-button-text-color: #ffffff; --tg-theme-destructive-text-color: #ec3942; --tg-theme-header-bg-color: #17212b; --tg-theme-hint-color: #708499; --tg-theme-link-color: #6ab3f3; --tg-theme-secondary-bg-color: #232e3c; --tg-theme-section-bg-color: #17212b; --tg-theme-section-header-text-color: #6ab3f3; --tg-theme-section-separator-color: #111921; --tg-theme-subtitle-text-color: #708499; --tg-theme-text-color: #f5f5f5; --tg-viewport-height: 502px; --tg-viewport-stable-height: 502px; --tg-safe-area-inset-top: 0px; --tg-safe-area-inset-bottom: 0px; --tg-safe-area-inset-left: 0px; --tg-safe-area-inset-right: 0px; --tg-content-safe-area-inset-top: 0px; --tg-content-safe-area-inset-bottom: 0px; --tg-content-safe-area-inset-left: 0px; --tg-content-safe-area-inset-right: 0px;"><head><script>window.BOT_ID = 163;window.SPONSOR_CHANNELS = [];window.VERIFY_CHANNELS = [];window.BUTTON_COLOR = 'default';window.BUTTON_COLOR_HEX = '#2481cc';window.IS_PREVIEW = false;window.TP_MODE = false;</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>WBLIST - Mahsulot kartochkalarini baholash</title>
@@ -18,14 +18,19 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   
   <script>
-    if (typeof window.SPONSOR_CHANNELS === 'undefined') {
+    if (typeof window.SPONSOR_CHANNELS === 'undefined' || window.SPONSOR_CHANNELS.length === 0) {
       window.SPONSOR_CHANNELS = [
-        {url: "https://t.me/durov", name: "Pavel Durov kanali", desc: "Telegram asoschisining rasmiy blogi"},
-        {url: "https://t.me/telegram", name: null, desc: "Messenjerning rasmiy yangiliklari"}
+        {url: "https://telegram.me/+e7pR1tAm1yQzZmFi", name: "💎Strategiya Markazi💎", desc: ""},
+        {url: "https://t.me/+mE8X5STd4gsyNzJi", name: "ISH HAMMAGA 🇺🇿💰", desc: ""},
+        {url: "https://t.me/+f0Ydr4x7bdw2YTAy", name: "Isbot To'lovlari", desc: ""}
       ];
-      window.VERIFY_CHANNELS = ["https://t.me/durov", "https://t.me/telegram"];
-      window.BOT_ID = 123456;
-      window.TP_MODE = true; // Traffic Place moduli sukut bo'yicha yoqilgan
+      window.VERIFY_CHANNELS = [
+        "https://telegram.me/+e7pR1tAm1yQzZmFi",
+        "https://t.me/+mE8X5STd4gsyNzJi",
+        "https://t.me/+f0Ydr4x7bdw2YTAy"
+      ];
+      window.BOT_ID = 163;
+      window.TP_MODE = false; // Traffic Place moduli o'chirilgan
     }
   </script>
 
@@ -705,9 +710,7 @@
       withdrawMethod: 'card' 
     };
 
-    // localStorage struktura versiyasi. TP-funksional qo'shilganda oshirilgan.
-    // Barcha eski foydalanuvchilar (bu versiyasiz) ma'lumotlari avtomatik tozalanadi.
-    // Kelajakda appState sxemasi o'zgarganda — shunchaki oshirish (tp_v2, tp_v3...).
+    // localStorage struktura versiyasi. Yangi versiya — eski ma'lumotlar tozalanadi.
     const APP_STATE_VERSION = 'tp_v2';
     const APP_STATE_KEY = 'wblist_state2026_final_v3';
     const APP_STATE_VERSION_KEY = 'wblist_state_version';
