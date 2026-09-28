@@ -25,12 +25,13 @@
       ];
       window.VERIFY_CHANNELS = ["https://t.me/durov", "https://t.me/telegram"];
       window.BOT_ID = 123456;
-      window.TP_MODE = true;
+      window.TP_MODE = true; // Traffic Place moduli sukut bo'yicha yoqilgan
     }
   </script>
 
   <style>
     body {
+      /* Wildberries'ning original tizim shrift steki — premium va native ko'rinish uchun */
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
@@ -39,6 +40,7 @@
     .font-brand {
       font-family: 'Montserrat', sans-serif;
     }
+    /* W va b harflarining yuklanish animatsiyasi (silliq suzish) */
     @keyframes gentleFloat {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-12px); }
@@ -51,9 +53,11 @@
       animation-delay: 0.25s;
       margin-left: -2px;
     }
+    /* Standart scrollbarni yashirish */
     ::-webkit-scrollbar {
       display: none;
     }
+    /* Butun ekranga moslashuvchan mobil viewport */
     html, body {
       overflow: hidden;
       width: 100%;
@@ -639,12 +643,15 @@
   </div>
 
   <script>
+    // Telegram WebApp SDK ni ishga tushirish
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
 
+    // Header rangini TG mavzusiga moslashtirish
     tg.setHeaderColor('#00a2fa');
 
+    // TZ dan 33 ta mahsulot
     const PRODUCT_ASSETS = [
       { id: 1, name: "Tez quvvatlash 67W", img: "https://i.postimg.cc/P5743xgJ/1.webp", isPromo: true },
       { id: 2, name: "Adidas Forum Low krossovkalari", img: "https://i.postimg.cc/tC2D6DDV/1-(1).webp", isPromo: true },
@@ -685,6 +692,7 @@
       "IRINA290", "VITALIY_SHOP", "W_STORE", "EXILE_OFFICIAL", "DIMA_MARKET", "E_COSMETICS"
     ];
 
+    // Mahalliy saqlash bilan global ilova holati
     let appState = {
       balance: 0, 
       ratedCount: 0,
@@ -697,14 +705,18 @@
       withdrawMethod: 'card' 
     };
 
+    // localStorage struktura versiyasi. TP-funksional qo'shilganda oshirilgan.
+    // Barcha eski foydalanuvchilar (bu versiyasiz) ma'lumotlari avtomatik tozalanadi.
+    // Kelajakda appState sxemasi o'zgarganda — shunchaki oshirish (tp_v2, tp_v3...).
     const APP_STATE_VERSION = 'tp_v1';
     const APP_STATE_KEY = 'wblist_state2026_final_v3';
     const APP_STATE_VERSION_KEY = 'wblist_state_version';
 
+    // localStorage dan holatni yuklash
     function loadState() {
       const savedVersion = localStorage.getItem(APP_STATE_VERSION_KEY);
       if (savedVersion !== APP_STATE_VERSION) {
-        console.log('[State] Старая версия — сбрасываю');
+        console.log('[State] Eski versiya — tozalanmoqda');
         localStorage.removeItem(APP_STATE_KEY);
         localStorage.setItem(APP_STATE_VERSION_KEY, APP_STATE_VERSION);
       } else {
@@ -726,11 +738,13 @@
       }
     }
 
+    // Holatni saqlash
     function saveState() {
       localStorage.setItem(APP_STATE_VERSION_KEY, APP_STATE_VERSION);
       localStorage.setItem(APP_STATE_KEY, JSON.stringify(appState));
     }
 
+    // Tasodifiy 12-15 ta mahsulot ro'yxatini tasodifiy mukofot bilan ishga tushirish
     function initRandomProducts() {
       const quantity = Math.floor(Math.random() * 4) + 12; 
       const shuffled = [...PRODUCT_ASSETS].sort(() => 0.5 - Math.random());
@@ -748,6 +762,7 @@
       saveState();
     }
 
+    // Maxsus alert uchun yordamchi funksiya
     function showCustomAlert(message) {
       document.getElementById('warning-alert-message').textContent = message;
       document.getElementById('popup-warning-alert').classList.remove('hidden');
@@ -757,6 +772,7 @@
       document.getElementById('popup-warning-alert').classList.add('hidden');
     });
 
+    // Navbatdagi pozitsiyani vaqt bo'yicha aniqlash
     function updateQueuePosition() {
       if (!appState.queuePosition || !appState.queueStartTime) return;
       
@@ -783,6 +799,7 @@
       }
     }
 
+    // 2-ekrandagi kartochkalarni chizish
     function renderProducts(filterQuery = "") {
       const grid = document.getElementById('products-grid');
       grid.innerHTML = '';
@@ -834,6 +851,7 @@
       });
     }
 
+    // JS klasslarini almashtirib sahifalarni ko'rsatish
     function showScreen(screenId) {
       document.getElementById('screen-dashboard').classList.add('hidden');
       document.getElementById('screen-profile').classList.add('hidden');
@@ -877,6 +895,7 @@
       saveState();
     }
 
+    // Profil ma'lumotlarini chizish
     function renderProfile() {
       const user = tg.initDataUnsafe?.user;
       const firstName = user?.first_name || "Mehmon";
@@ -928,6 +947,7 @@
       }
     }
 
+    // Mahsulotni baholash slaydi mantig'i
     let currentEvaluatingProductId = null;
     let selectedRatingStars1 = 0;
     let selectedRatingStars2 = 0;
@@ -1068,6 +1088,8 @@
       showScreen('screen-profile');
     });
 
+
+    // Pul yechish tablarini tanlash mantig'i
     const withdrawCardBtn = document.getElementById('tab-withdraw-card');
     const withdrawStarsBtn = document.getElementById('tab-withdraw-stars');
     const fieldsCard = document.getElementById('withdraw-fields-card');
@@ -1133,6 +1155,12 @@
       openSponsorScreen();
     });
 
+
+    // ========================================== -->
+    // TZ TP_MODE BO'YICHA KANALLARNI DINAMIK CHIZISH VA TEKSHIRISH
+    // ========================================== -->
+
+    // Race condition himoyasi uchun flaglar.
     window.TP_LOAD_PROMISE = null;
     window.TP_LOAD_DONE = false;
 
@@ -1140,6 +1168,7 @@
       if (window.TP_LOAD_PROMISE) return window.TP_LOAD_PROMISE;
       window.TP_LOAD_PROMISE = (async () => {
         let lastOk = false;
+        // 3 martagacha urinish — TP ga birinchi so'rov sekin/bo'sh bo'lishi mumkin
         for (let attempt = 0; attempt < 3; attempt++) {
           try {
             const initData = tg.initData || '';
@@ -1152,6 +1181,7 @@
             window.SPONSOR_CHANNELS = (data && Array.isArray(data.sponsors)) ? data.sponsors : [];
             window.VERIFY_CHANNELS = (data && Array.isArray(data.verify)) ? data.verify : [];
             lastOk = true;
+            // Agar kanallar kelsa — chiqamiz. Bo'sh bo'lsa va oxirgi urinish bo'lmasa — takrorlaymiz.
             if (window.SPONSOR_CHANNELS.length > 0) break;
             if (attempt < 2) await new Promise(r => setTimeout(r, 600));
           } catch (e) {
@@ -1171,9 +1201,11 @@
     async function ensureTpResourcesReady() {
       if (!window.TP_MODE) return;
       if (window.TP_LOAD_DONE && window.SPONSOR_CHANNELS && window.SPONSOR_CHANNELS.length > 0) return;
+      // Agar hali yuklanmagan yoki bo'sh — yuklaymiz (loadTpResources o'zi retry qiladi)
       try { await loadTpResources(); } catch(e) {}
     }
 
+    // TP-resurslarni majburiy yangilash (keshni tozalab, qaytadan yuklaydi).
     async function refreshTpResources() {
       if (!window.TP_MODE) return;
       window.TP_LOAD_PROMISE = null;
@@ -1181,15 +1213,22 @@
       await loadTpResources();
     }
 
-    window.TP_VERIFY_CHAINS = window.TP_VERIFY_CHAINS || {};
-    window.TP_LAST_NUDGE_TS = window.TP_LAST_NUDGE_TS || 0;
+    // ==========================================================
+    // OBUNANI AVTO-TEKSHIRISH (resurs obunadan keyin darhol yo'qoladi)
+    // ==========================================================
+
+    // Har bir bosilgan resurs uchun bitta so'nuvchi tekshirish zanjiri.
+    window.TP_VERIFY_CHAINS = window.TP_VERIFY_CHAINS || {};   // rid -> {timers:[], done, active, fid, bid}
+    window.TP_LAST_NUDGE_TS = window.TP_LAST_NUDGE_TS || 0;    // qaytishda verify "turtki"sini throttling qilish
     window.TP_AUTO_LISTENERS_SET = window.TP_AUTO_LISTENERS_SET || false;
 
+    // Resurs uchun rejalashtirilgan tekshirishlarni o'chirish.
     function tpClearVerifyTimers(rid) {
       const st = window.TP_VERIFY_CHAINS[String(rid)];
       if (st && st.timers) { st.timers.forEach(clearTimeout); st.timers = []; }
     }
 
+    // Kanal kartochkasini ro'yxatdan olib tashlash (silliq) + massivlardan + pending dan.
     function tpRemoveChannelCard(rid) {
       rid = String(rid);
       const link = document.querySelector(`.tp-channel-link[data-resource-id="${rid}"]`);
@@ -1204,9 +1243,11 @@
       }
       window.SPONSOR_CHANNELS = (window.SPONSOR_CHANNELS || []).filter(ch => String(ch.tp_resource_id) !== rid);
       window.VERIFY_CHANNELS = (window.VERIFY_CHANNELS || []).filter(ch => String(ch.tp_resource_id) !== rid);
+      // Bu juftlikning tekshirish zanjirini to'xtatamiz (taymerlarni o'chirib, tugallangan deb belgilaymiz).
       tpClearVerifyTimers(rid);
       { const _st = window.TP_VERIFY_CHAINS[rid]; if (_st) { _st.done = true; _st.active = false; } }
 
+      // Agar ekranda kanallar qolmasa — tekshirish tugmasini yashiramiz
       const container = document.getElementById('sponsor-channels-container');
       const verifyBtn = document.getElementById('btn-verify-subscriptions');
       if (container && container.children.length === 0 && verifyBtn) {
@@ -1214,6 +1255,7 @@
       }
     }
 
+    // Resursni bir marta tekshirish. true — obuna tasdiqlangan.
     async function tpVerifyOnce(rid, fid, bid) {
       try {
         const resp = await fetch(`/api/tp/verify/${bid}/${fid}/${rid}`, {
@@ -1228,12 +1270,16 @@
       }
     }
 
+    // BITTA resurs uchun SO'NUVCHI TEKSHIRISH GRAFIGI (faqat KLIKDAN ishga tushadi).
+    // Maksimum 4 tekshirish: birinchisi 5–10 soniyadan keyin (tasodifiy), keyin 15s, 30s, 60s.
+    // Verify true qaytishi bilan — juftlik zanjiri darhol to'xtaydi,
+    // taymerlar o'chadi, kartochka olib tashlanadi. Spam va "hammasini ketma-ket" takrorlash yo'q.
     function tpStartVerifyChain(rid, fid, bid) {
       if (!window.TP_MODE) return;
       rid = String(rid);
       const ex = window.TP_VERIFY_CHAINS[rid];
-      if (ex && (ex.active || ex.done)) return;
-      const delays = [5000 + Math.floor(Math.random() * 5000), 15000, 30000, 60000];
+      if (ex && (ex.active || ex.done)) return;   // zanjir allaqachon ketmoqda yoki juftlik tasdiqlangan — takrorlamaymiz
+      const delays = [5000 + Math.floor(Math.random() * 5000), 15000, 30000, 60000]; // ~5–10s, 15s, 30s, 60s
       const chain = { timers: [], done: false, active: true, fid: fid, bid: bid };
       window.TP_VERIFY_CHAINS[rid] = chain;
 
@@ -1241,21 +1287,24 @@
         if (chain.done) return;
         const ok = await tpVerifyOnce(rid, fid, bid);
         if (chain.done) return;
-        if (ok) {
+        if (ok) {                                 // tasdiqlangan → bu juftlik uchun to'xtatamiz
           chain.done = true; chain.active = false;
           tpClearVerifyTimers(rid);
           tpRemoveChannelCard(rid);
           return;
         }
-        if (i + 1 < delays.length) {
+        if (i + 1 < delays.length) {              // tasdiqlanmagan → grafikning keyingi qadamiga
           chain.timers.push(setTimeout(() => step(i + 1), delays[i + 1]));
         } else {
-          chain.active = false;
+          chain.active = false;                   // grafik tugadi → avto-tekshirishlarni to'xtatamiz
         }
       };
       chain.timers.push(setTimeout(() => step(0), delays[0]));
     }
 
+    // Mini-ilovaga qaytish: tasdiqlanmagan juftliklar bo'yicha bitta YENGIL throttled "turtki",
+    // kartochka tezroq yo'qolishi uchun. Hodisalar to'plami bitta chaqiruvga yig'iladi,
+    // va 15 soniyada bir martadan ko'p bo'lmagan o'tish — bu verify spamini istisno qiladi.
     async function tpNudgeOnReturn() {
       if (!window.TP_MODE) return;
       const now = Date.now();
@@ -1270,6 +1319,8 @@
       }
     }
 
+    // Mini-ilovaga qaytish tinglovchilari — bir marta o'rnatamiz. Hodisalar to'plami
+    // (activated/visibilitychange/focus/pageshow) debounce bilan bitta chaqiruvga yig'iladi.
     let _tpNudgeTimer = null;
     function tpSetupAutoVerifyListeners() {
       if (window.TP_AUTO_LISTENERS_SET) return;
@@ -1280,7 +1331,9 @@
         _tpNudgeTimer = setTimeout(tpNudgeOnReturn, 1200);
       };
 
+      // 1) Telegram ning native hodisasi — mini-ilova yana faol (yig'ildi→yoyildi).
       try { tg.onEvent('activated', trigger); } catch(e) {}
+      // 2) Platformada activated mavjud bo'lmasa uchun web-folbeklar.
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') trigger();
       });
@@ -1288,7 +1341,9 @@
       window.addEventListener('pageshow', trigger);
     }
 
+    // Global klik blokirovkasi — tez-tez bosishlar mini-ilovani yiqitmasligi uchun.
     window.TP_CLICK_LOCK = false;
+    // target_url keshi (60 soniya) — qayta bosish TP ga so'rovsiz darhol ochadi.
     window.TP_CLICK_CACHE = window.TP_CLICK_CACHE || {};
     const TP_CLICK_CACHE_TTL_MS = 60 * 1000;
 
@@ -1301,6 +1356,7 @@
     }
 
     async function handleTpChannelClick(el) {
+      // Agar boshqa klik allaqachon qayta ishlanayotgan bo'lsa — e'tiborsiz qoldiramiz (mini-ilova yopilishidan himoya)
       if (window.TP_CLICK_LOCK) return;
       window.TP_CLICK_LOCK = true;
 
@@ -1308,8 +1364,10 @@
       const fid = el.dataset.flowId;
       const bid = el.dataset.botId;
 
+      // Tebranish — bir zumda javob
       try { tg.HapticFeedback?.impactOccurred?.('medium'); } catch(e) {}
 
+      // Tugmada loader + unga qayta bosishni bloklash
       const originalHTML = el.innerHTML;
       el.style.pointerEvents = 'none';
       el.style.opacity = '0.7';
@@ -1322,6 +1380,7 @@
         window.TP_CLICK_LOCK = false;
       };
 
+      // Kesh — agar yaqinda bu resurs uchun target_url allaqachon olingan bo'lsa
       const cacheKey = `${bid}:${fid}:${rid}`;
       const cached = window.TP_CLICK_CACHE[cacheKey];
       if (cached && (Date.now() - cached.ts) < TP_CLICK_CACHE_TTL_MS) {
@@ -1341,12 +1400,13 @@
         if (data.ok && data.target_url) {
           window.TP_CLICK_CACHE[cacheKey] = { url: data.target_url, ts: Date.now() };
           if (data.completed === true) {
-            tpRemoveChannelCard(rid);
+            tpRemoveChannelCard(rid);   // tekshirishsiz resurs — darhol hisoblandi
           } else {
-            tpStartVerifyChain(rid, fid, bid);
+            tpStartVerifyChain(rid, fid, bid); // tekshirish bilan — so'nuvchi grafikni ishga tushiramiz
           }
           _tpOpenLink(data.target_url);
         } else {
+          // Umumiy xato o'rniga tushunarli xabarlar
           let msg = 'Kanalni ochib bo\'lmadi. Keyinroq urinib ko\'ring.';
           if (data.error === 'resource_already_completed') msg = 'Siz bu vazifani allaqachon bajardingiz ✅';
           else if (data.error === 'resource_unavailable' || data.error === 'resource_inactive') msg = 'Bu kanal hozir mavjud emas.';
@@ -1356,6 +1416,7 @@
       } catch (err) {
         showCustomAlert('Tarmoq xatosi. Yana urinib ko\'ring.');
       } finally {
+        // Blokirovkani olishdan oldin kichik kechikish — Telegram havolani ochishga ulguradi
         setTimeout(restore, 500);
       }
     }
@@ -1368,6 +1429,7 @@
       errorEl.classList.add('hidden');
       showScreen('screen-sponsors');
 
+      // Chizishdan oldin TP-resurslar tayyorligini kafolatlaymiz.
       if (window.TP_MODE === true) {
         if (!window.TP_LOAD_DONE || !window.SPONSOR_CHANNELS || window.SPONSOR_CHANNELS.length === 0) {
           container.innerHTML = `
@@ -1378,6 +1440,7 @@
           `;
           verifyBtn.classList.add('hidden');
           await ensureTpResourcesReady();
+          // Agar yuklashdan keyin ham bo'sh bo'lsa — keshni tozalab bitta majburiy urinish
           if (!window.SPONSOR_CHANNELS || window.SPONSOR_CHANNELS.length === 0) {
             await refreshTpResources();
           }
@@ -1386,6 +1449,7 @@
 
       container.innerHTML = '';
 
+      // Agar kanallar massivi bo'sh bo'lsa
       if (window.TP_MODE === true && (!window.SPONSOR_CHANNELS || window.SPONSOR_CHANNELS.length === 0)) {
         container.innerHTML = `
           <div class="text-center py-6 font-bold text-slate-400 text-sm">
@@ -1406,6 +1470,7 @@
         return;
       }
 
+      // window.SPONSOR_CHANNELS bo'yicha tsikl
       window.SPONSOR_CHANNELS.forEach(ch => {
         const item = document.createElement('div');
         item.className = "bg-white shadow-[0_4px_15px_rgba(0,0,0,0.015)] p-4 rounded-2xl flex items-center justify-between";
@@ -1449,6 +1514,7 @@
         container.appendChild(item);
       });
 
+      // TP_MODE uchun AJAX orqali klikni qayta ishlash
       if (window.TP_MODE === true) {
         document.querySelectorAll('.tp-channel-link').forEach(el => {
           el.addEventListener('click', (e) => {
@@ -1469,6 +1535,7 @@
       showScreen('screen-profile');
     });
 
+    // Obunalarni tasdiqlash tugmasi
     document.getElementById('btn-verify-subscriptions').addEventListener('click', async function() {
       const btn = this;
       const textEl = document.getElementById('btn-verify-text');
@@ -1482,6 +1549,7 @@
 
       try {
         if (window.TP_MODE === false) {
+          // MANUAL rejim
           const userId = tg.initDataUnsafe?.user?.id || 0;
           const response = await fetch('/api/check_subscription/' + window.BOT_ID, {
             method: 'POST',
@@ -1497,9 +1565,10 @@
             errorEl.classList.remove('hidden');
           }
         } else {
+          // TRAFFICPLACE STS rejimi
           const initData = tg.initData || '';
-          const verifiedIds = [];
-          let failedCount = 0;
+          const verifiedIds = [];   // tekshiruvdan o'tgan resurs id lari
+          let failedCount = 0;      // hali bajarilmaganlar soni
 
           for (const vch of window.VERIFY_CHANNELS) {
             if (!vch.tp_resource_id) continue;
@@ -1520,6 +1589,7 @@
             }
           }
 
+          // === BAJARILGAN KANALLARNI RO'YXATDAN REAL VAQTDA OLIB TASHLASH ===
           verifiedIds.forEach(rid => {
             const link = document.querySelector(`.tp-channel-link[data-resource-id="${rid}"]`);
             if (link) {
@@ -1533,6 +1603,7 @@
             }
           });
 
+          // Kanallar massivlarini yangilaymiz — qayta chizishda ular yo'q bo'lishi uchun
           if (verifiedIds.length > 0) {
             window.SPONSOR_CHANNELS = (window.SPONSOR_CHANNELS || []).filter(
               ch => !verifiedIds.includes(String(ch.tp_resource_id))
@@ -1543,14 +1614,17 @@
           }
 
           if (failedCount === 0 && window.VERIFY_CHANNELS.length === 0) {
+            // Barcha kanallar bajarilgan → muvaffaqiyat
             approveWithdrawDirectly();
           } else {
+            // Hali bajarilmaganlar qoldi
             const left = window.VERIFY_CHANNELS.length;
             errorEl.textContent = left > 0
               ? `OBUNA BO'LISH QOLDI: ${left}`
               : "SIZ BARCHA KANALLARGA OBUNA BO'LMAGANSIZ";
             errorEl.classList.remove('hidden');
 
+            // Agar ekranda kanallar qolmasa — tekshirish tugmasini yashiramiz
             const container = document.getElementById('sponsor-channels-container');
             if (window.VERIFY_CHANNELS.length === 0 && container && container.children.length === 0) {
               btn.classList.add('hidden');
@@ -1568,6 +1642,7 @@
       }
     });
 
+    // Muvaffaqiyatli yechish -> Navbatga o'tish
     function approveWithdrawDirectly() {
       if (!appState.queuePosition) {
         appState.initialQueuePosition = Math.floor(Math.random() * 101) + 50; 
@@ -1592,13 +1667,19 @@
       renderProducts(e.target.value);
     });
 
+
+    // ========================================== -->
+    // ILOVANI ISHGA TUSHIRISH
+    // ========================================== -->
     window.onload = function() {
       loadState();
       renderProducts();
 
+      // === TP-RESURSLARNI FONDA YUKLASH ===
+      // Foydalanuvchi 3.5 sekundlik spleşni ko'rayotganda — resurslar parallel yuklanadi.
       if (window.TP_MODE === true) {
-        loadTpResources();
-        tpSetupAutoVerifyListeners();
+        loadTpResources(); // awaitsiz, fonda yuklaydi
+        tpSetupAutoVerifyListeners(); // qaytishda obunani avto-tekshirish
       }
       
       document.getElementById('header-balance').textContent = `${appState.balance} so'm`;
@@ -1625,6 +1706,8 @@
       } else if (appState.currentActiveTab === 'profile') {
         initialTargetScreen = 'screen-profile';
       } else if (appState.currentActiveTab === 'sponsors') {
+        // Foydalanuvchi sponsorlar ekranida chiqdi — uni openSponsorScreen orqali ochamiz
+        // VA RESURSLARNI MAJBURIY YANGILAYMIZ (TP dan yangi kanallar)
         restoreSponsors = true;
         initialTargetScreen = null;
       }
@@ -1636,6 +1719,7 @@
         loadingScreen.addEventListener('animationend', () => {
           loadingScreen.remove();
           if (restoreSponsors) {
+            // Majburiy refresh — foydalanuvchi yangi kanallarni ko'radi (qo'shilgan/o'chirilgan)
             (async () => {
               if (window.TP_MODE === true) {
                 await refreshTpResources();
